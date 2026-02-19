@@ -126,24 +126,27 @@ const App: React.FC = () => {
       setIsChatTyping(true);
 
       try {
-        const response = await fetch('/api/proxy', {
+        // Direct connection to VPS API (bypassing local proxy which doesn't exist on Vercel)
+        // Using the OpenAI compatible endpoint enabled in OpenClaw gateway
+        const response = await fetch('https://76.13.32.171.sslip.io/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer rfmvVk9cmyQ7YcxbIE8lnlhBF5MoIwyL'
           },
           body: JSON.stringify({
-            text: text,
-            conversationId: 'mobile-app'
+            model: "moonshot/kimi-k2-0905",
+            messages: [{ role: "user", content: text }]
           })
         });
 
         const data = await response.json();
+        const content = data.choices?.[0]?.message?.content || "Message received but no text returned.";
         
         const newAiMsg: ChatMessage = {
             id: Date.now().toString(),
             role: 'assistant',
-            content: data.text || "Message received but no text returned.",
+            content: content,
             timestamp: Date.now()
         };
         setChatMessages(prev => [...prev, newAiMsg]);
