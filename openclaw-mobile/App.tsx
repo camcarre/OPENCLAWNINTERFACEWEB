@@ -116,7 +116,7 @@ const App: React.FC = () => {
       setIsChatTyping(true);
 
       try {
-        const response = await fetch('https://76.13.32.171.sslip.io/api/message', {
+        const response = await fetch('/api/proxy', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
