@@ -1,0 +1,18 @@
+# Clés SSH (Sécurité critique)
+security/keys/id_ed25519_openclawn
+security/keys/id_ed25519_openclawn.pub
+
+# Secrets et vault
+config/secrets.json
+config/user_roles.json
+
+# Node modules et logs
+node_modules/
+*.log
+.DS_Store
+
+# Mobile Build
+openclaw-mobile/dist
+openclaw-mobile/node_modules
+openclaw-mobile/.env.local
+config/openclaw.json

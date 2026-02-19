@@ -1,0 +1,17 @@
+
+{
+  "short_name": "OpenClaw",
+  "name": "OpenClaw Autonomous Agent",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/bottts/png?seed=OpenClaw&backgroundColor=D97757",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#F9F9F7",
+  "background_color": "#F9F9F7"
+}

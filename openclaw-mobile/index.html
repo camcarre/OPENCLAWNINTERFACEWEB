@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>OpenClaw</title>
+    
+    <!-- PWA / iOS Specific -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="OpenClaw">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#F9F9F7">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/bottts/svg?seed=OpenClaw&backgroundColor=D97757">
+    <link rel="manifest" href="manifest.json">
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg: {
+                primary: '#F9F9F7',
+                surface: '#FFFFFF',
+                elevated: '#F0F0EA',
+                input: '#F2F2F7',
+              },
+              accent: {
+                green: '#28CD41',
+                'green-dim': 'rgba(40, 205, 65, 0.08)',
+                red: '#FF3B30',
+                amber: '#FF9500',
+                blue: '#007AFF',
+                claude: '#D97757'
+              },
+              text: {
+                primary: '#1D1D1F',
+                secondary: '#6E6E73',
+                tertiary: '#AEAEB2',
+              },
+              border: {
+                subtle: '#E5E5E1',
+                visible: '#D2D2D7',
+                active: '#007AFF',
+              }
+            },
+            fontFamily: {
+              sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'Arial', 'sans-serif'],
+              serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+              mono: ['SF Mono', 'ui-monospace', 'Menlo', 'Monaco', 'monospace'],
+            },
+            boxShadow: {
+              'apple': '0 4px 24px rgba(0, 0, 0, 0.02)',
+              'apple-deep': '0 12px 32px rgba(0, 0, 0, 0.06)',
+            },
+            animation: {
+              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'dash': 'dash 2s linear infinite',
+              'slideUp': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+              'fadeIn': 'fadeIn 0.3s ease-out',
+            },
+            keyframes: {
+              slideUp: {
+                '0%': { transform: 'translateY(20px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              dash: {
+                '0%': { strokeDashoffset: '40' },
+                '100%': { strokeDashoffset: '0' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        --sat: env(safe-area-inset-top);
+        --sar: env(safe-area-inset-right);
+        --sab: env(safe-area-inset-bottom);
+        --sal: env(safe-area-inset-left);
+      }
+      body {
+        background-color: #F9F9F7;
+        color: #1D1D1F;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+        /* Prevent scroll bounce on iOS */
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+      #root {
+        height: 100%;
+        overflow: hidden;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.574.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "OpenClaw Mobile",
+  "description": "High-fidelity mobile dashboard for OpenClaw autonomous agent system featuring real-time pipeline monitoring, neural arena visualization, and artifact management.",
+  "requestFramePermissions": []
+}

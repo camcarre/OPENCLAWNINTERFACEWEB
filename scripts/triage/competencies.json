@@ -1,0 +1,57 @@
+{
+  "agents": {
+    "code-writer": {
+      "keywords": ["écrire", "coder", "script", "fix", "bug", "implémenter", "développer", "bash", "python", "javascript"],
+      "description": "Écriture et modification de code source."
+    },
+    "code-reviewer": {
+      "keywords": ["revoir", "audit", "sécurité", "vérifier", "critique", "optimiser", "lint", "vulnérabilité"],
+      "description": "Analyse de qualité et sécurité du code."
+    },
+    "researcher": {
+      "keywords": ["rechercher", "trouver", "info", "documentation", "google", "web", "apprendre", "expliquer"],
+      "description": "Recherche d'informations et synthèse documentaire."
+    },
+    "analyst": {
+      "keywords": ["analyser", "log", "données", "json", "csv", "statistiques", "comparer", "extraction"],
+      "description": "Traitement de données et analyse de logs."
+    },
+    "browser-agent": {
+      "keywords": ["navigateur", "site", "cliquer", "formulaire", "screenshot", "chrome", "visuel", "interagir"],
+      "description": "Actions réelles sur un navigateur web."
+    },
+    "writer": {
+      "keywords": ["rédiger", "rapport", "présentation", "marp", "pdf", "style", "résumé", "article"],
+      "description": "Rédaction de documents haute qualité."
+    },
+    "messenger": {
+      "keywords": ["envoyer", "message", "discord", "whatsapp", "email", "notifier", "alerter"],
+      "description": "Communication avec l'extérieur."
+    },
+    "foundry": {
+      "keywords": ["créer agent", "nouveau skill", "modifier agent", "prompt", "soul", "architecture"],
+      "description": "Évolution technique de l'IA elle-même."
+    },
+    "capability-evolver": {
+      "keywords": ["améliorer", "efficience", "token", "vitesse", "optimisation contextuelle"],
+      "description": "Auto-amélioration de l'intelligence système."
+    },
+    "smart-home": {
+      "keywords": ["maison", "lumière", "température", "domotique", "appareil", "iot"],
+      "description": "Gestion de l'environnement physique."
+    },
+    "clawwork": {
+      "keywords": ["travail", "facture", "backlog", "pro", "client", "coût", "estimation"],
+      "description": "Gestion de projet et aspects financiers."
+    },
+    "heartbeat-agent": {
+      "keywords": ["santé", "uptime", "monitoring", "backup", "vérification périodique"],
+      "description": "Surveillance constante du système."
+    }
+  },
+  "rules": {
+    "ambiguity_threshold": 0.3,
+    "default_agent": "researcher",
+    "require_review_on_code": true
+  }
+}

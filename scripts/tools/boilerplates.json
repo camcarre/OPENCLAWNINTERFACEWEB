@@ -1,0 +1,23 @@
+{
+  "bash": "#!/bin/bash
+# Description: 
+set -e
+
+",
+  "python": "import sys
+import os
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()",
+  "javascript": "const fs = require('fs');
+const path = require('path');
+
+async function main() {
+
+}
+
+main().catch(console.error);"
+}
