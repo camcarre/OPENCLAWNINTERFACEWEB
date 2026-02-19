@@ -47,7 +47,7 @@ const App: React.FC = () => {
   
   // Real-time Sync via WebSocket
   useEffect(() => {
-    const ws = new WebSocket('ws://76.13.32.171:18790');
+    const ws = new WebSocket('wss://ws-76.13.32.171.sslip.io');
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -116,7 +116,7 @@ const App: React.FC = () => {
       setIsChatTyping(true);
 
       try {
-        const response = await fetch('http://76.13.32.171:18791/api/message', {
+        const response = await fetch('https://76.13.32.171.sslip.io/api/message', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
