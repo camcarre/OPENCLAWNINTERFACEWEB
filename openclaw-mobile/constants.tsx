@@ -31,8 +31,8 @@ export const PIPELINE_STEPS: PipelineStep[] = [
   { id: 'deliver', label: 'DELIVER', status: 'future' },
 ];
 
-export const getAgentIcon = (id: string, className?: string) => {
-  const props = { className: className || "w-4 h-4" };
+export const getAgentIcon = (id: string, className?: string, additionalProps?: any) => {
+  const props = { className: className || "w-4 h-4", ...additionalProps };
   switch (id) {
     case 'main': return <Brain {...props} />;
     case 'code-writer': return <Code {...props} />;

@@ -49,7 +49,7 @@ const Dashboard: React.FC<DashboardProps> = ({ systemStatus, wallet, widgets, on
   );
 
   return (
-    <div className="flex flex-col min-h-screen pb-[140px] bg-bg-primary pt-[env(safe-area-inset-top)] relative overflow-x-hidden">
+    <div className="flex flex-col h-full overflow-y-auto pb-[140px] bg-bg-primary pt-[env(safe-area-inset-top)] relative overflow-x-hidden">
       
       {/* Settings Modal */}
       {showSettings && (

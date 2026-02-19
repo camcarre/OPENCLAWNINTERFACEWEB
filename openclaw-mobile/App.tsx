@@ -70,6 +70,16 @@ const App: React.FC = () => {
 
       if (data.type === 'activity') {
         setCurrentThought(data.thought);
+        
+        const newLog: LogEntry = {
+            id: Date.now().toString(),
+            agent: data.agent,
+            message: data.thought,
+            timestamp: new Date().toLocaleTimeString(),
+            level: 'EXECUTE'
+        };
+        setLogs(prev => [newLog, ...prev]);
+
         setAgents(prev => prev.map(a => 
           a.id === data.agent ? { ...a, status: AgentStatus.THINKING } : { ...a, status: AgentStatus.IDLE }
         ));

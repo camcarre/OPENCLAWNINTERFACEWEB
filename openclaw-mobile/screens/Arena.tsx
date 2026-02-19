@@ -10,12 +10,19 @@ interface ArenaProps {
   logs: LogEntry[];
 }
 
-const Arena: React.FC<ArenaProps> = ({ agents, currentThought, logs }) => {
+const Arena: React.FC<ArenaProps> = ({ agents: rawAgents, currentThought, logs }) => {
+  // Deduplicate agents to prevent "double" rendering issues
+  const agents = React.useMemo(() => {
+    const unique = new Map();
+    rawAgents.forEach(a => unique.set(a.id, a));
+    return Array.from(unique.values());
+  }, [rawAgents]);
+
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'status' | 'logs'>('status');
   const [isTransformed, setIsTransformed] = useState(false);
 
-  const INITIAL_TRANSFORM = { x: 0, y: 0, scale: 1.1 };
+  const INITIAL_TRANSFORM = { x: 0, y: 0, scale: 0.85 };
   const transformRef = useRef({ ...INITIAL_TRANSFORM });
   
   const containerRef = useRef<HTMLDivElement>(null);
@@ -104,20 +111,39 @@ const Arena: React.FC<ArenaProps> = ({ agents, currentThought, logs }) => {
   };
 
   const getAgentPosition = (agentId: string) => {
-    if (agentId === 'manager') return { x: CENTER_X, y: CENTER_Y };
-    const peripheralAgents = agents.filter(a => a.id !== 'manager');
-    const pIndex = peripheralAgents.findIndex(a => a.id === agentId);
-    const pTotal = peripheralAgents.length;
-    const angleStep = (2 * Math.PI) / pTotal;
-    const angle = angleStep * pIndex - Math.PI / 2;
-    return {
-      x: CENTER_X + RADIUS * Math.cos(angle),
-      y: CENTER_Y + RADIUS * Math.sin(angle)
-    };
+    if (agentId === 'main') return { x: CENTER_X, y: CENTER_Y };
+    
+    // Only active agents are part of the layout
+    const activeAgents = agents.filter(a => a.id !== 'main' && a.status !== AgentStatus.IDLE);
+    const index = activeAgents.findIndex(a => a.id === agentId);
+    
+    // If agent is not active, return a hidden position (though it won't be rendered)
+    if (index === -1) return { x: CENTER_X, y: CENTER_Y };
+
+    const count = activeAgents.length;
+    // Dynamic spacing to fit screen height (approx 500-600px usable)
+    const spacingY = Math.max(55, Math.min(120, 550 / (Math.max(count, 1)))); 
+    const offsetX = 100;  // Horizontal offset from center
+    
+    // Center the stack vertically around the manager
+    // If 1 agent: y = CENTER_Y
+    // If 2 agents: y1 = CENTER_Y - 60, y2 = CENTER_Y + 60
+    const totalHeight = (count - 1) * spacingY;
+    const startY = CENTER_Y - totalHeight / 2;
+    
+    // Zigzag pattern: Left, Right, Left, Right
+    const x = (index % 2 === 0) ? CENTER_X - offsetX : CENTER_X + offsetX;
+    const y = startY + index * spacingY;
+    
+    return { x, y };
   };
 
   const selectedAgent = agents.find(a => a.id === selectedAgentId);
-  const managerPos = getAgentPosition('manager');
+  const managerPos = getAgentPosition('main');
+  
+  // Determine if manager should blink (Only manager visible + logs exist indicating past activity)
+  const activeAgentsCount = agents.filter(a => a.id !== 'main' && a.status !== AgentStatus.IDLE).length;
+  const isManagerBlinking = activeAgentsCount === 0 && logs.length > 0;
 
   useEffect(() => {
     updateDOMTransforms();
@@ -167,41 +193,48 @@ const Arena: React.FC<ArenaProps> = ({ agents, currentThought, logs }) => {
             <g 
               ref={gRef} 
               style={{ 
-                transformOrigin: 'center', 
+                transformOrigin: `${CENTER_X}px ${CENTER_Y}px`, 
                 willChange: 'transform',
                 transform: `scale(${INITIAL_TRANSFORM.scale}) translate(${INITIAL_TRANSFORM.x}px, ${INITIAL_TRANSFORM.y}px)`
               }}
             >
+                {/* Links */}
                 {agents.map((agent) => {
-                    if (agent.id === 'manager') return null;
+                    if (agent.id === 'main') return null;
+                    // Only show link if agent is active
+                    if (agent.status === AgentStatus.IDLE) return null;
+
                     const aPos = getAgentPosition(agent.id);
-                    const isActive = agent.status === AgentStatus.SENDING || agent.status === AgentStatus.THINKING;
+                    const isActive = true; // By definition if we are here
                     
                     return (
                         <g key={`link-${agent.id}`}>
                             <line 
                               x1={managerPos.x} y1={managerPos.y} 
                               x2={aPos.x} y2={aPos.y} 
-                              stroke={isActive ? "#D97757" : "#E5E5E7"} 
-                              strokeWidth={isActive ? 2 : 1} 
-                              strokeOpacity={isActive ? 0.6 : 0.2}
+                              stroke="#D97757" 
+                              strokeWidth={2} 
+                              strokeOpacity={0.6}
                               className="transition-all duration-700"
                             />
-                            {isActive && (
-                                <circle r="1.5" fill="#D97757">
-                                  <animateMotion 
-                                    dur="2s" 
-                                    repeatCount="indefinite" 
-                                    path={`M ${managerPos.x} ${managerPos.y} L ${aPos.x} ${aPos.y}`} 
-                                  />
-                                </circle>
-                            )}
+                            <circle r="1.5" fill="#D97757">
+                              <animateMotion 
+                                dur="2s" 
+                                repeatCount="indefinite" 
+                                path={`M ${managerPos.x} ${managerPos.y} L ${aPos.x} ${aPos.y}`} 
+                              />
+                            </circle>
                         </g>
                     );
                 })}
 
+                {/* Agents Nodes */}
                 {agents.map((agent) => {
-                    const isM = agent.id === 'manager';
+                    const isM = agent.id === 'main';
+                    
+                    // Skip inactive agents (except manager)
+                    if (!isM && agent.status === AgentStatus.IDLE) return null;
+
                     const pos = getAgentPosition(agent.id);
                     const r = isM ? 34 : 26;
                     const selected = selectedAgentId === agent.id;
@@ -213,8 +246,19 @@ const Arena: React.FC<ArenaProps> = ({ agents, currentThought, logs }) => {
                     else if (agent.status === AgentStatus.SENDING) { accentColor = '#D97757'; glowColor = 'rgba(217,119,87,0.1)'; }
                     else if (agent.status === AgentStatus.ERROR) { accentColor = '#FF3B30'; glowColor = 'rgba(255,59,48,0.1)'; }
                     
-                    // Si sélectionné, le manager devient orange vif, les autres noir intense
-                    if (selected) accentColor = isM ? '#D97757' : '#1D1D1F';
+                    // Manager specific styling
+                    if (isM) {
+                      if (isManagerBlinking) {
+                         // Finished State: Green
+                         accentColor = '#34C759'; // Success Green
+                         glowColor = 'rgba(52, 199, 89, 0.2)'; 
+                      } else {
+                         // Idle / Working State
+                         accentColor = '#1D1D1F'; // Default dark for manager
+                      }
+                    }
+
+                    if (selected) accentColor = isM ? (isManagerBlinking ? '#34C759' : '#D97757') : '#1D1D1F';
 
                     return (
                         <g 
@@ -228,7 +272,14 @@ const Arena: React.FC<ArenaProps> = ({ agents, currentThought, logs }) => {
                           }} 
                           className="agent-node cursor-pointer group"
                         >
-                            <circle r={r + 6} fill={glowColor} className="transition-all duration-500" />
+                            {/* Glow Effect */}
+                            <circle 
+                              r={r + 6} 
+                              fill={glowColor} 
+                              className={`transition-all duration-500 ${isM && isManagerBlinking ? 'animate-pulse' : ''}`} 
+                            />
+                            
+                            {/* Main Circle */}
                             <circle 
                               r={r} 
                               fill="white" 
@@ -236,11 +287,11 @@ const Arena: React.FC<ArenaProps> = ({ agents, currentThought, logs }) => {
                               strokeWidth={selected ? 3 : 1.2} 
                               className="transition-all duration-300 shadow-sm"
                             />
-                            <foreignObject x={-11} y={-11} width={22} height={22} className="pointer-events-none">
-                                <div className={`w-full h-full flex items-center justify-center transition-colors ${selected ? (isM ? 'text-accent-claude' : 'text-text-primary') : 'text-text-secondary'}`}>
-                                    {getAgentIcon(agent.id, "w-5.5 h-5.5")}
-                                </div>
-                            </foreignObject>
+                            
+                            {/* Icon */}
+                            {getAgentIcon(agent.id, `transition-colors ${selected ? (isM ? 'text-accent-claude' : 'text-text-primary') : 'text-text-secondary'} pointer-events-none`, { x: -11, y: -11, width: 22, height: 22 })}
+                            
+                            {/* Label */}
                             <text 
                               y={r + 20} 
                               textAnchor="middle" 
@@ -248,6 +299,17 @@ const Arena: React.FC<ArenaProps> = ({ agents, currentThought, logs }) => {
                             >
                               {agent.name}
                             </text>
+                            
+                            {/* Manager Status Badge */}
+                            {isM && (
+                                <text 
+                                  y={r + 32} 
+                                  textAnchor="middle" 
+                                  className={`text-[9px] font-semibold tracking-wide uppercase pointer-events-none ${isManagerBlinking ? 'fill-[#34C759]' : 'fill-text-tertiary opacity-50'}`}
+                                >
+                                  {isManagerBlinking ? "Terminé" : (activeAgentsCount > 0 ? "En cours" : "Prêt")}
+                                </text>
+                            )}
                         </g>
                     );
                 })}
@@ -338,7 +400,7 @@ const Arena: React.FC<ArenaProps> = ({ agents, currentThought, logs }) => {
                             </div>
                         ) : (
                             <div className="space-y-1">
-                                {logs.filter(l => l.agent === selectedAgent.name || selectedAgent.id === 'manager').slice(0, 15).map((log) => {
+                                {logs.filter(l => l.agent === selectedAgent.name || selectedAgent.id === 'main').slice(0, 15).map((log) => {
                                     const levelColor = 
                                         log.level === 'ERROR' ? 'bg-accent-red' : 
                                         log.level === 'PLAN' ? 'bg-accent-claude' : 

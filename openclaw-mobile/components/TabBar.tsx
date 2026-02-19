@@ -19,11 +19,11 @@ const TabBar: React.FC<TabBarProps> = ({ currentTab, onTabChange, online }) => {
   const getActiveIndex = () => tabs.findIndex(t => t.id === currentTab);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] px-6 pb-[env(safe-area-inset-bottom)] pointer-events-none flex flex-col items-center">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] px-6 pb-[env(safe-area-inset-bottom)] pointer-events-none flex flex-col items-center transform-gpu">
       {/* Container spacing from bottom indicator */}
       <div className="h-4 pointer-events-none" />
       
-      <nav className="pointer-events-auto relative flex items-center bg-white/60 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[32px] p-1.5 min-w-[240px] max-w-sm transition-all duration-500 hover:shadow-[0_12px_48px_rgba(0,0,0,0.12)] mb-6">
+      <nav className="pointer-events-auto relative flex items-center bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[32px] p-1.5 min-w-[240px] max-w-sm transition-all duration-500 hover:shadow-[0_12px_48px_rgba(0,0,0,0.12)] mb-2">
         
         {/* Morphing Background Pill */}
         <div 

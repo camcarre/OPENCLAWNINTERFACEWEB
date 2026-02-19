@@ -77,9 +77,9 @@ const Chat: React.FC<ChatProps> = ({ messages, onSendMessage, isTyping }) => {
   return (
     <div className="flex flex-col h-screen bg-bg-primary pt-[env(safe-area-inset-top)] overflow-hidden relative">
       
-      {/* Main Content Area - Increased bottom padding to 220px to clear the stacked bars */}
+      {/* Main Content Area - Increased bottom padding to 340px to clear the stacked bars */}
       <div 
-        className="flex-1 overflow-y-auto px-5 no-scrollbar pb-[220px]"
+        className="flex-1 overflow-y-auto px-5 no-scrollbar pb-[340px]"
         onClick={() => setShowActions(false)}
       >
         {isWelcomeState ? (
@@ -129,8 +129,8 @@ const Chat: React.FC<ChatProps> = ({ messages, onSendMessage, isTyping }) => {
         )}
       </div>
 
-      {/* Fixed Input Bar Container - Adjusted bottom to 116px to sit safely above the TabBar pill */}
-      <div className="absolute bottom-[116px] left-0 right-0 px-5 z-40 pointer-events-none">
+      {/* Fixed Input Bar Container - Adjusted bottom to 180px to sit safely above the TabBar pill */}
+      <div className="absolute bottom-[180px] left-0 right-0 px-5 z-40 pointer-events-none">
         
         {/* Action Menu (Vertical) */}
         {showActions && (
