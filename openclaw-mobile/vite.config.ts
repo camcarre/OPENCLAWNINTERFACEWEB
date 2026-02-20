@@ -8,6 +8,20 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
+        proxy: {
+          '/api': {
+            target: 'https://76.13.32.171.sslip.io',
+            changeOrigin: true,
+            secure: false,
+            rewrite: (path) => path.replace(/^\/api/, ''),
+            configure: (proxy, _options) => {
+              proxy.on('proxyReq', (proxyReq, _req, _res) => {
+                // Inject API key for local development
+                proxyReq.setHeader('Authorization', 'Bearer rfmvVk9cmyQ7YcxbIE8lnlhBF5MoIwyL');
+              });
+            }
+          }
+        }
       },
       plugins: [react()],
       define: {

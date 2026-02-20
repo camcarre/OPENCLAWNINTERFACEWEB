@@ -126,13 +126,11 @@ const App: React.FC = () => {
       setIsChatTyping(true);
 
       try {
-        // Direct connection to VPS API (bypassing local proxy which doesn't exist on Vercel)
-        // Using the OpenAI compatible endpoint enabled in OpenClaw gateway
-        const response = await fetch('https://76.13.32.171.sslip.io/v1/chat/completions', {
+        // Connection via local proxy (Vercel or Vite dev server) to hide API key and VPS URL
+        const response = await fetch('/api/v1/chat/completions', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer rfmvVk9cmyQ7YcxbIE8lnlhBF5MoIwyL'
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             model: "moonshot/kimi-k2-0905",
