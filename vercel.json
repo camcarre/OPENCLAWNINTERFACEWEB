@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/proxy?originalPath=$1" },
-    { "source": "/(.*)", "destination": "/openclaw-mobile/$1" }
+    { "source": "/api/(.*)", "destination": "/api/proxy?originalPath=$1" }
   ]
 }

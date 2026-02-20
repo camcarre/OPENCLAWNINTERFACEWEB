@@ -1,5 +1,4 @@
 import https from 'https';
-import { URLSearchParams } from 'url';
 
 export default function handler(req, res) {
   // CORS Setup
@@ -16,8 +15,21 @@ export default function handler(req, res) {
   const { originalPath, ...restQuery } = req.query;
   
   // Reconstruct query string excluding originalPath
-  const queryString = new URLSearchParams(restQuery).toString();
+  const searchParams = new URLSearchParams();
+  Object.keys(restQuery).forEach(key => {
+    const value = restQuery[key];
+    if (Array.isArray(value)) {
+      value.forEach(v => searchParams.append(key, v));
+    } else {
+      searchParams.append(key, value);
+    }
+  });
+  const queryString = searchParams.toString();
   const targetPath = (originalPath ? `/${originalPath}` : '/') + (queryString ? `?${queryString}` : '');
+
+  // Log request for debugging
+  console.log(`[Proxy] Requesting: https://76.13.32.171.sslip.io${targetPath}`);
+  console.log(`[Proxy] Method: ${req.method}`);
 
   // Configuration de la requête vers le VPS (Caddy)
   const options = {
@@ -31,7 +43,8 @@ export default function handler(req, res) {
       'Authorization': `Bearer ${process.env.OPENCLAW_API_KEY || 'rfmvVk9cmyQ7YcxbIE8lnlhBF5MoIwyL'}`,
     },
     // CRITIQUE : On ignore l'erreur de certificat auto-signé
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    timeout: 50000 // 50 seconds timeout
   };
 
   // Add Content-Length if body exists
@@ -41,6 +54,7 @@ export default function handler(req, res) {
   }
 
   const proxyReq = https.request(options, (proxyRes) => {
+    console.log(`[Proxy] Response Status: ${proxyRes.statusCode}`);
     res.status(proxyRes.statusCode || 500);
     // Copy headers from proxy response
     Object.keys(proxyRes.headers).forEach(key => {
@@ -51,9 +65,17 @@ export default function handler(req, res) {
     proxyRes.pipe(res);
   });
 
+  proxyReq.on('timeout', () => {
+    console.error('[Proxy] Request timed out');
+    proxyReq.destroy();
+    res.status(504).json({ error: 'Gateway Timeout', details: 'Upstream server took too long to respond' });
+  });
+
   proxyReq.on('error', (e) => {
-    console.error('Proxy Error:', e);
-    res.status(500).json({ error: 'Proxy connection failed', details: e.message });
+    console.error('[Proxy] Error:', e.message);
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Bad Gateway', details: e.message });
+    }
   });
 
   if (req.body) {
