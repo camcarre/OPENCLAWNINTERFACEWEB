@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+set script_path [file dirname [file normalize [info script]]]
+source "$script_path/../settings.tcl"
+
+set command [lindex $argv 0]
+if {$command == ""} {
+    set command "ls -la $remote_workspace"
+}
+
+# Use standard ssh without forcing password-only
+spawn ssh $ssh_user@$ssh_host docker exec $docker_container sh -c \"$command\"
+expect {
+    "password:" {
+        send "$ssh_pass\r"
+    }
+    "(yes/no)?" {
+        send "yes\r"
+        expect "password:"
+        send "$ssh_pass\r"
+    }
+}
+expect eof

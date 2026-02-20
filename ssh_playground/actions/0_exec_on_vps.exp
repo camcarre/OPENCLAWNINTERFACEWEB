@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+set script_path [file dirname [file normalize [info script]]]
+source "$script_path/../settings.tcl"
+
+set command [lindex $argv 0]
+if {$command == ""} {
+    set command "echo '✅ Connexion SSH réussie sur le VPS :' && hostname && uptime && uname -a"
+}
+
+# Standard SSH connection (tries key first, then password)
+spawn ssh -o StrictHostKeyChecking=no $ssh_user@$ssh_host $command
+expect {
+    "password:" {
+        send "$ssh_pass\r"
+        exp_continue
+    }
+    "(yes/no)?" {
+        send "yes\r"
+        exp_continue
+    }
+    eof
+}
