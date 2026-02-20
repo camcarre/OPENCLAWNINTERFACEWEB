@@ -30,6 +30,7 @@ export default function handler(req, res) {
   // Log request for debugging
   console.log(`[Proxy] Requesting: https://76.13.32.171.sslip.io${targetPath}`);
   console.log(`[Proxy] Method: ${req.method}`);
+  console.log(`[Proxy] Headers (Client):`, JSON.stringify(req.headers));
 
   // Configuration de la requête vers le VPS (Caddy)
   const options = {
@@ -51,19 +52,35 @@ export default function handler(req, res) {
   if (req.body) {
     const bodyString = JSON.stringify(req.body);
     options.headers['Content-Length'] = Buffer.byteLength(bodyString);
+    console.log(`[Proxy] Body (Snippet):`, bodyString.substring(0, 200));
   }
 
   const proxyReq = https.request(options, (proxyRes) => {
-    console.log(`[Proxy] Response Status: ${proxyRes.statusCode}`);
-    res.status(proxyRes.statusCode || 500);
-    // Copy headers from proxy response
-    Object.keys(proxyRes.headers).forEach(key => {
-      if (proxyRes.headers[key]) {
-        res.setHeader(key, proxyRes.headers[key]);
-      }
+      console.log(`[Proxy] Response Status: ${proxyRes.statusCode}`);
+      console.log(`[Proxy] Response Headers:`, JSON.stringify(proxyRes.headers));
+      
+      res.status(proxyRes.statusCode || 500);
+      // Copy headers from proxy response
+      Object.keys(proxyRes.headers).forEach(key => {
+        if (proxyRes.headers[key]) {
+          res.setHeader(key, proxyRes.headers[key]);
+        }
+      });
+      
+      // Log response body snippet and pipe manually
+      let bodySnippet = '';
+      proxyRes.on('data', (chunk) => {
+        if (bodySnippet.length < 500) {
+          bodySnippet += chunk.toString();
+        }
+        res.write(chunk);
+      });
+      
+      proxyRes.on('end', () => {
+         console.log(`[Proxy] Response Body (Snippet):`, bodySnippet.substring(0, 500));
+         res.end();
+      });
     });
-    proxyRes.pipe(res);
-  });
 
   proxyReq.on('timeout', () => {
     console.error('[Proxy] Request timed out');

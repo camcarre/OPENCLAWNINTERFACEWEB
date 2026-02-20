@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-bg-primary: #F9F9F7;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-elevated: #F0F0EA;
+  --color-bg-input: #F2F2F7;
+
+  --color-accent-green: #28CD41;
+  --color-accent-green-dim: rgba(40, 205, 65, 0.08);
+  --color-accent-red: #FF3B30;
+  --color-accent-amber: #FF9500;
+  --color-accent-blue: #007AFF;
+  --color-accent-claude: #D97757;
+
+  --color-text-primary: #1D1D1F;
+  --color-text-secondary: #6E6E73;
+  --color-text-tertiary: #AEAEB2;
+
+  --color-border-subtle: #E5E5E1;
+  --color-border-visible: #D2D2D7;
+  --color-border-active: #007AFF;
+
+  /* Fonts */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, Monaco, monospace;
+
+  /* Shadows */
+  --shadow-apple: 0 4px 24px rgba(0, 0, 0, 0.02);
+  --shadow-apple-deep: 0 12px 32px rgba(0, 0, 0, 0.06);
+
+  /* Animations */
+  --animate-pulse-fast: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-dash: dash 2s linear infinite;
+  --animate-slideUp: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-fadeIn: fadeIn 0.3s ease-out;
+
+  @keyframes slideUp {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes dash {
+    0% { stroke-dashoffset: 40; }
+    100% { stroke-dashoffset: 0; }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "openclaw-web-interface",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd openclaw-mobile && npm install && npm run build && mkdir -p ../dist && cp -r dist/* ../dist/"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
